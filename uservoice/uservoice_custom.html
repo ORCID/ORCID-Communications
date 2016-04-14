@@ -1,0 +1,317 @@
+<!-- HEAD -->
+<link rel="shortcut icon" href="https://orcid.org/static/img/favicon.ico">
+
+<!-- HEADER (leave blank for default header) -->
+<header class="uvContainer uvMasthead {% if site.background_color == 'fff' || site.background_color == 'ffffff' %}uvMasthead-white{% endif %}">
+  <div class="uvRow">
+    <div class="uvCol-12">
+      <div class="uvMastheadWrapper">
+        {% if site.has_logo %}
+          <a class="uvMastheadHomeLink" href="http://orcid.org" title="{{ site.title }}">
+            <img class="uvMastheadLogo" src="{{ site.logo_url }}" alt="{{ site.organization.name }}">
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Create the privacy notice message -->
+<!--
+<p><div id="privacyNotice">
+  <div id="privacyMessage">The support.orcid.org website is on a UserVoice platform that has a different privacy policy from our other sites. You may view the details at <a id="privacyLink" href="http://support.orcid.org/tos">http://support.orcid.org/tos</a></div><div id="privacyClose" onclick="hidePrivacyMsg()">X</div>
+</div></p>
+-->
+
+<!-- HOME PAGE -->
+<div class="uvContainer uvBody">
+
+  <div class="uvRow">
+    
+    {% for notice in notices %}
+      <div class="uvNotice uvNotice-{{ notice[0] }}">
+        <p>{{ notice[1] }}</p>
+      </div>
+    {% endfor %}
+    
+    <div class="uvCol-8" data-ajaxTarget="homepage-content">
+      
+      <article>
+        <header class="uvPageHeader">
+          <h1 class="uvPageTitle uvCustomPrimary-color">{{ site.title }}</h1>
+        </header>
+      </article>
+
+      <!-- BEGIN site welcome message  -->
+      {% if site.body_html %}
+        <div class="uvModule uvModule-message typeset">
+          {{ site.body_html }}
+        </div>
+      {% endif %}
+      <!-- END  -->
+      
+      
+
+      <!-- BEGIN knowledge base module  -->
+      {% if site.knowledgebase_ui_enabled and site.has_articles %}
+        <div class="uvModule uvModule-knowledgebase">
+          <header class="uvModuleHeader">
+            <h2 class="uvModuleTitle uvCustomPrimary-color">
+              <a href="/knowledgebase">{{ 'Knowledge Base' | translate }}</a>
+            </h2>
+          </header>
+          <section class="uvModuleSection uvModuleSection-topics">
+            <ol class="uvKbTopics">
+              {% if site.has_topics %}
+                {% for section in site.topics %}
+                  {% if section.has_articles %}
+                    <li class="uvKbTopic uvKbTopic-{{ section.id }}">
+                      <h2 class="uvKbTopicTitle uvCustomPrimary-color"><a href="{{ section.path }}">{{ section.name }}&nbsp;<span class="uvStyle-linkArrow">&#8594;</span></a></h2>
+                      <ol class="uvList uvList-articles uvList-faqs">
+                        {% for article in section.articles limit: 5 %}
+                          <li class="uvListItem uvListItem-article-{{ article.id }}">
+                            <a href="{{ article.path }}">{{ article.title }}</a>
+                          </li>
+                        {% endfor %}
+                      </ol>
+                      {% if section.articles_count > 5 %}
+                        <div>
+                          <a href="{{ section.path }}" class="uvListMore" title="View all articles in {{ section.name }}">{{ section.articles_count }} {{ 'articles' | translate }}&nbsp;<span class="uvStyle-linkArrow">&#8594;</span></a>
+                        </div>
+                      {% endif %}
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              
+              <li class="uvKbTopic uvKbTopic-all">
+                <h2 class="uvKbTopicTitle uvCustomPrimary-color"><a href="{{ site.all_article_path }}">{{ 'All articles' | translate }}&nbsp;<span class="uvStyle-linkArrow">&#8594;</span></a></h2>
+                <ol class="uvList uvList-articles uvList-faqs">
+                  {% for article in site.articles limit: 5 %}
+                    <li class="uvListItem uvListItem-article-{{ article.id }}">
+                        <a href="{{ article.path }}">{{ article.title }}</a>
+                    </li>
+                  {% endfor %}
+                </ol>
+                {% if site.articles_count > 5 %}
+                  <a href="{{ site.all_article_path }}" class="uvListMore" title="View all articles">{{site.articles.size}} {{ 'articles' | translate }}&nbsp;<span class="uvStyle-linkArrow">&#8594;</span></a>
+                {% endif %}
+              </li>
+            
+            </ol>
+          </section>
+        </div>
+      {% endif %}
+      <!-- END knowledge base module  -->
+
+{% if site.feedback_ui_enabled %}
+        {% if site.forums_count > 1 %}
+          <!-- BEGIN multi-forum module  -->
+          <div class="uvModule uvModule-featuredForum">
+            <header class="uvModuleHeader">
+              <h2 class="uvModuleTitle uvCustomPrimary-color">
+                <a href="{{ site.default_forum.path }}">{{ 'Give feedback' | translate }}</a>
+              </h2>
+            </header>
+            <section class="uvModuleSection uvModuleSection-featuredIdeas">
+              <h3 class="uvModuleSectionHeader uvCustomPrimary-color">
+                {{ 'Feedback forums' | translate }}
+              </h3>
+              <ul class="uvList uvList-forums{% if site.forums_count > 5 %} uvList-forums-2col{% endif %}" data-tmpl="portalAltForumsTmpl">
+                {% for forum in site.forums %}
+                  <li class="uvListItem uvListItem-forum-{{ forum.id }}">
+                    <h4 class="uvListItemHeader">
+                      <a href="{{ forum.path }}">{{ forum.name }}</a>
+                      {% if forum.is_private %}
+                        <span class="uvIcon-private-10">({{ 'private' | translate }})</span>
+                      {% endif %}
+                    </h4>
+                    <p class="uvStyle-meta">
+                      {{ forum.suggestions_count }}
+                      {{ 'ideas' | translate }}
+                    </p>
+                  </li>
+                {% endfor %}
+              </ul>
+            </section>
+
+            {% if site.recently_updated_suggestions.size > 0 %}
+              <section class="uvModuleSection uvModuleSection-recentlyUpdatedIdeas">
+                <h3 class="uvModuleSectionHeader uvCustomPrimary-color">{{ 'Recently updated ideas' | translate }}</h3>
+                <ul class="uvList uvList-recentlyUpdatedIdeas">
+                  {% for suggestion in site.recently_updated_suggestions limit: 3 %}
+                    <li class="uvListItem uvListItem-idea-{{ suggestion.id }}">
+                      <h4 class="uvListItemHeader"><a href="{{ suggestion.path }}">{{ suggestion.title }}</a></h4>
+                      <p class="uvStyle-meta">
+                        {% if suggestion.status_name != nil %}
+                          {% if suggestion.status_path %}<a href="{{ suggestion.status_path }}" title="View other {{ suggestion.status_name }} ideas like {{ suggestion.title }}">{% endif %}<em class="uvStyle-status {{ suggestion.status_class }}">{{ suggestion.status_name | translate }}</em>{% if suggestion.status_path %}</a>{% endif %}
+                        {% endif %}
+                        {{ 'Updated' | translate }}
+                        {{ suggestion.updated_at | date: "%x" }}
+                        &middot;
+                        <a href="{{ suggestion.forum.path }}">{{ suggestion.forum.name }}</a>
+                      </p>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </section>
+            {% endif %}
+          </div>
+          <!-- END multi-forum module  -->
+        {% else %}
+          {% if site.first_forum %}
+            <!-- BEGIN single forum module  -->
+            <div class="uvModule uvModule-featuredForum">
+              <header class="uvModuleHeader">
+                <h2 class="uvModuleTitle uvCustomPrimary-color"><a href="{{ site.first_forum.path }}">{{ site.first_forum.prompt | translate }}&nbsp;<span class="uvStyle-linkArrow">&#8594;</span></a></h2>
+              </header>
+              <section class="uvModuleSection uvModuleSection-featuredIdeas">
+                <h3 class="uvModuleSectionHeader uvCustomPrimary-color">
+                  {{ 'Top ideas from the community' | translate }}
+                  {% if site.first_forum.suggestions_count > 0 %}
+                    <a href="{{ site.first_forum.path }}" class="uvModuleSectionHeaderMeta">({{site.first_forum.suggestions_count }} {{ 'ideas' | translate }})</a>
+                  {% endif %}
+                </h3>
+                {% if site.first_forum.has_suggestions %}
+                  <ul class="uvList uvList-ideas">
+                    {% for suggestion in site.first_forum.suggestions limit: 3 %}
+                      <li class="uvListItem uvListItem-idea-{{ suggestion.id }} uvIdea uvIdea-small">
+                        {% render_suggestion suggestion %}
+                      </li>
+                    {% endfor %}
+                    <li class="uvListItem uvListItem-postNewIdea"><a href="{{ site.first_forum.path }}">{{ 'Post a new idea' | translate }}&nbsp;<span class="uvStyle-linkArrow">&#8594;</span></a></li>
+                  </ul>
+                {% endif %}
+              </section>
+              {% if site.first_forum.recently_updated_suggestions.size > 0 %}
+                <section class="uvModuleSection uvModuleSection-recentlyUpdatedIdeas">
+                  <h3 class="uvModuleSectionHeader uvCustomPrimary-color">{{ 'Recently updated ideas' | translate }}</h3>
+                  <ul class="uvList uvList-recentlyUpdatedIdeas">
+                    {% for suggestion in site.first_forum.recently_updated_suggestions limit: 3 %}
+                      <li class="uvListItem uvListItem-idea-{{ suggestion.id }} uvIdea uvIdea-small">
+                        <h4 class="uvListItemHeader"><a href="{{ suggestion.path }}">{{ suggestion.title }}</a></h4>
+                        <p class="uvStyle-meta">
+                          {% if suggestion.status_name != nil %}
+                            <a href="{{ suggestion.status_path }}" title="View other {{ suggestion.status_name }} ideas like {{ suggestion.title }}"><em class="uvStyle-status {{ suggestion.status_class }}">{{ suggestion.status_name | translate }}</em></a>
+                          {% endif %}
+                          {{ 'Updated' | translate }}
+                          {{ suggestion.updated_at | date: "%x" }}
+                        </p>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </section>
+              {% endif %}
+            </div>
+            <!-- END single forum module  -->
+          {% endif %}
+        {% endif %}
+      {% endif %}
+
+    </div>
+
+    <div class="uvCol-4 uvSidebar uvCol-last">
+      {{ render_user }}
+      {{ render_custom_top_sidebar }}
+      {{ render_sidebar }}
+      {{ render_custom_bottom_sidebar }}
+    </div>
+
+  </div>  
+</div>
+
+<!-- ABOVE SIDEBAR -->
+
+<!-- BELOW SIDEBAR  -->
+
+<!-- FOOTER (leave blank for default footer) -->
+<footer class="uvContainer uvFooter">
+  <div class="uvRow">
+    <div class="uvCol-12">
+      <p>
+        {% if site.organization.url && site.organization.url != '' %}
+          <a href="{{ site.organization.url }}">{{ site.organization.name }}</a>
+          <span class="uvStyle-separator"> &middot; </span>
+        {% endif %}
+        <a href="{{ site.path }}" class='site-frontpage-link'>{{ site.title }}</a>
+        <span class="uvStyle-separator"> &middot; </span>
+        <a href="/tos">{{ "Terms of Service" | translate }} &amp; {{ "Privacy Policy" | translate }}</a>
+      </p>
+      {% if site.is_white_labelled == false %}
+        <p>
+          <a href="http://www.uservoice.com/powered-by/?uv_company_name={{site.organization.name}}&uv_experience=portal&uv_contact_url={{site.host}}&utm_campaign={{campaign}}_poweredby&utm_medium=product&utm_source={{site.host}}">
+            Powered By UserVoice
+          </a>
+          <span class="uvStyle-separator"> &middot; </span>
+          <a href="https://www.uservoice.com/powered-by/?uv_company_name={{site.organization.name}}&uv_experience=portal&uv_contact_url={{site.host}}&utm_campaign={{campaign}}_feedback&utm_medium=product&utm_source={{site.host}}">
+            Product Management Platform
+          </a>
+        </p>
+      {% endif %}
+      <p>
+        {{ language_select }}
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- JAVASCRIPT SNIPPETS -->
+
+<script type=text/javascript>
+
+var oauthWindow;
+
+function orcidOAUTH() {
+    var oauthWindow = window.open("https://sandbox.orcid.org/oauth/authorize?client_id=0000-0002-1223-3173&response_type=code&scope=/authenticate&redirect_uri=http://support.orcid.org/knowledgebase/articles/432952", "_blank", "toolbar=no, scrollbars=yes, width=500, height=600, top=500, left=500");
+}
+
+//Check whether hide_privacy_notice cookie is set
+window.onload = checkCookie();
+
+//Hide the privacy message and set hide_privacy_notice cookie when privacy message is closed
+function hidePrivacyMsg() {
+  document.getElementById('privacyNotice').style.visibility = "hidden";
+  // Set expiration date to one year
+  var d = new Date();
+  d.setTime(d.getTime() + (365*24*60*60*1000));
+  var expires = "expires="+d.toUTCString();
+  // Build cookie string
+  var cookie_string = "hide_privacy_notice=true; path=/; expires=" + expires;
+  // Create/update the cookie:
+  document.cookie = cookie_string;
+}
+
+//Retrieve hide_privacy_notice cookie
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+//Hide privacy message if hide_privacy_notice cookie is set 
+function checkCookie() {
+    var privacy_notice_cookie = getCookie("hide_privacy_notice");
+    if (privacy_notice_cookie != "") {
+        document.getElementById('privacyNotice').style.visibility = "hidden";
+    }
+}
+
+
+
+
+
+</script>
+
+<script type="text/javascript">
+ document.getElementById("forum_embed").src =
+  "https://groups.google.com/forum/embed/?place=forum/orcid-api-users" +
+  "&showsearch=true&showpopout=false&parenturl=" +
+  encodeURIComponent(window.location.href);
+</script>
